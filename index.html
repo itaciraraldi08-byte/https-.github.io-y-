@@ -1,272 +1,146 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>❤️Itachi&Mia❤️</title>
+    <title❤TE AMO❤</title>
 
-    <style>
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            background: red;
-            overflow: hidden;
-            font-family: Arial, sans-serif;
-            color: white;
-        }
-        
-        canvas {
-            position: fixed;
-            inset: 0;
-        }
-        
-        #opening {
-            position: fixed;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: black;
-            z-index: 50;
-            animation: fadeOut 3s forwards;
-            animation-delay: 6s;
-        }
-        
-        #opening h1 {
-            font-size: 48px;
-            color: #ff2e2e;
-            letter-spacing: 4px;
-            animation: openingText 3s ease-out;
-        }
-        
-        #opening p {
-            opacity: .6;
-        }
-        
-        @keyframes openingText {
-            from {
-                opacity: 0;
-                transform: translateY(40px)
+        <style>
+            body {
+                margin: 0;
+                overflow: hidden;
+                background: black;
+                font-family: Arial;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                color: white;
             }
-            to {
-                opacity: 1;
-                transform: translateY(0)
+            
+            .heart {
+                position: relative;
+                width: 200px;
+                height: 180px;
+                transform: rotate(-45deg);
+                animation: beat 1.2s infinite;
             }
-        }
-        
-        @keyframes fadeOut {
-            to {
-                opacity: 0;
-                pointer-events: none
+            
+            .heart:before,
+            .heart:after {
+                content: "";
+                position: absolute;
+                width: 200px;
+                height: 180px;
+                background: red;
+                border-radius: 50%;
             }
-        }
-        
-        #buttons {
-            position: fixed;
-            bottom: 90px;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            z-index: 40;
-        }
-        
-        button {
-            font-size: 22px;
-            padding: 12px 28px;
-            border: none;
-            border-radius: 30px;
-            cursor: pointer;
-        }
-        
-        #sim {
-            background: #ff2e2e;
-            color: white
-        }
-        
-        #nao {
-            background: #444;
-            color: white;
-            position: relative
-        }
-        
-        #eyes {
-            position: fixed;
-            inset: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            pointer-events: none;
-        }
-        
-        .eye {
-            width: 80px;
-            height: 80px;
-            border: 4px solid red;
-            border-radius: 50%;
-            margin: 0 40px;
-            animation: blink 5s infinite;
-        }
-        
-        @keyframes blink {
-            0%,
-            90%,
-            100% {
-                transform: scaleY(1)
+            
+            .heart:before {
+                top: -100px;
+                left: 0;
             }
-            95% {
-                transform: scaleY(0.1)
+            
+            .heart:after {
+                left: 100px;
+                top: 0;
             }
-        }
-        
-        #final {
-            position: fixed;
-            inset: 0;
-            background: white;
-            color: black;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            z-index: 60;
-        }
-        
-        #final h1 {
-            font-size: 42px
-        }
-    </style>
+            
+            .text {
+                position: absolute;
+                transform: rotate(45deg);
+                width: 100%;
+                height: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 28px;
+                font-weight: bold;
+                text-shadow: 0 0 20px white;
+            }
+            
+            @keyframes beat {
+                0% {
+                    transform: rotate(-45deg) scale(1);
+                }
+                50% {
+                    transform: rotate(-45deg) scale(1.1);
+                }
+                100% {
+                    transform: rotate(-45deg) scale(1);
+                }
+            }
+            
+            canvas {
+                position: absolute;
+                top: 0;
+                left: 0;
+                z-index: -1;
+            }
+        </style>
 </head>
 
 <body>
 
-    <div id="opening">
-        <h1>🌑 ITACHI&Mia 🌑</h1>
+    <canvas id="particles"></canvas>
+
+    <div class="heart">
+        <div class="text">TE AMO MINHA VIDA </div>
     </div>
-
-    <div id="eyes">
-        <div class="eye"></div>
-        <div class="eye"></div>
-    </div>
-
-    <div id="buttons">
-        <button id="sim">SIM ❤️</button>
-        <button id="nao">NÃO 💔</button>
-    </div>
-
-    <div id="final">
-        <h1>💌 Amor eterno</h1>
-        <p>Mesmo no silêncio… eu sempre escolhi você.</p>
-    </div>
-
-    <canvas id="c"></canvas>
-
-    <!-- 🎶 Música opening -->
-    <audio id="music" loop>
-  <source src="https://cdn.pixabay.com/audio/2023/03/13/audio_38c8c9efc3.mp3">
-</audio>
-
-    <!-- 😈 Voz sussurrada -->
-    <audio id="whisper">
-  <source src="https://cdn.pixabay.com/audio/2022/11/23/audio_96f3b2c5c8.mp3">
-</audio>
 
     <script>
-        const NOME = "eclipse";
+        const canvas = document.getElementById("particles")
+        const ctx = canvas.getContext("2d")
 
-        const c = document.getElementById("c"),
-            ctx = c.getContext("2d");
-        const music = document.getElementById("music");
-        const whisper = document.getElementById("whisper");
-        const sim = document.getElementById("sim");
-        const nao = document.getElementById("nao");
-        const final = document.getElementById("final");
+        canvas.width = window.innerWidth
+        canvas.height = window.innerHeight
 
-        function resize() {
-            c.width = innerWidth;
-            c.height = innerHeight
-        }
-        resize();
-        addEventListener("resize", resize);
+        let particles = []
 
-        // autoplay
-        addEventListener("pointerdown", () => {
-            music.play().catch(() => {});
-            whisper.play().catch(() => {});
-        }, {
-            once: true
-        });
-
-        // NÃO foge
-        nao.addEventListener("mouseover", () => {
-            nao.style.left = (Math.random() * 200 - 100) + "px";
-            nao.style.top = (Math.random() * 200 - 100) + "px";
-        });
-
-        // SIM ativa tudo
-        sim.addEventListener("click", () => {
-            navigator.vibrate ? .([200, 100, 200]);
-            whisper.volume = 0.3;
-            music.volume = 1;
-            iniciarFinal();
-        });
-
-        // partículas nome
-        let particles = [],
-            time = 0;
-
-        function criarNome() {
-            ctx.font = "bold 140px Arial";
-            const m = ctx.measureText(NOME);
-            ctx.fillText(NOME, (c.width - m.width) / 2, c.height / 2);
-            const d = ctx.getImageData(0, 0, c.width, c.height).data;
-            for (let i = 0; i < d.length; i += 4) {
-                if (d[i + 3] > 200 && Math.random() < 0.02) {
-                    const x = (i / 4) % c.width;
-                    const y = Math.floor(i / 4 / c.width);
-                    particles.push({
-                        x: Math.random() * c.width,
-                        y: Math.random() * c.height,
-                        tx: x,
-                        ty: y
-                    });
-                }
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width
+                this.y = Math.random() * canvas.height
+                this.size = Math.random() * 3
+                this.speedX = (Math.random() - 0.5) * 2
+                this.speedY = (Math.random() - 0.5) * 2
+                this.color = `hsl(${Math.random()*360},100%,60%)`
             }
-            ctx.clearRect(0, 0, c.width, c.height);
-        }
-        criarNome();
 
-        function iniciarFinal() {
-            let fade = 0;
-
-            function fim() {
-                ctx.fillStyle = "rgba(0,0,0,.2)";
-                ctx.fillRect(0, 0, c.width, c.height);
-
-                particles.forEach(p => {
-                    p.x += (p.tx - p.x) * 0.05;
-                    p.y += (p.ty - p.y) * 0.05;
-                    ctx.fillStyle = "red";
-                    ctx.fillRect(p.x, p.y, 2, 2);
-                });
-
-                fade += 0.005;
-                ctx.fillStyle = `rgba(255,255,255,${fade})`;
-                ctx.fillRect(0, 0, c.width, c.height);
-
-                music.volume = Math.max(0, 1 - fade);
-
-                if (fade < 1) requestAnimationFrame(fim);
-                else {
-                    music.pause();
-                    final.style.display = "flex";
-                }
+            update() {
+                this.x += this.speedX
+                this.y += this.speedY
             }
-            fim();
+
+            draw() {
+                ctx.fillStyle = this.color
+                ctx.beginPath()
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2)
+                ctx.fill()
+            }
         }
+
+        function init() {
+            for (let i = 0; i < 400; i++) {
+                particles.push(new Particle())
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+            particles.forEach(p => {
+                p.update()
+                p.draw()
+            })
+
+            requestAnimationFrame(animate)
+        }
+
+        init()
+        animate()
     </script>
+
 </body>
 
 </html>
